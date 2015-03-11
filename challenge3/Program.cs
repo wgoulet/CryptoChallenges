@@ -43,7 +43,6 @@ namespace challenge3
                     char t = Convert.ToChar(b ^ i);
                     Dictionary<char, int> dict = freqmap[Convert.ToChar(i)];
                     if (dict.Keys.Contains<char>(t))
-                    //                    if(dict[t] != null)
                     {
                         dict[t] += 1;
                     }
@@ -83,7 +82,7 @@ namespace challenge3
                     maxct = t.Item1;
                 }
             }
-            // Get set of tuples with maxct
+            // Get set of tuples with maxct; this could be simplified with LINQ query
             foreach(Tuple<int,char,Dictionary<char,int>> t in ecount)
             {
                 if(t.Item1 == maxct)
@@ -101,11 +100,11 @@ namespace challenge3
                 int index = 0;
                 int kindex = 0;
                 List<char> histogram = new List<char>();
-                histogram.AddRange(new char[] {'e','t','o','i','r','s','n','a','u'});
+                histogram.AddRange(new char[] {'e','t','o','i'});
                 int ct = 0;
                 foreach(Tuple<char,Dictionary<char,int>> t in candidates)
                 {
-                    foreach (char c in histogram.GetRange(0,4))
+                    foreach (char c in histogram)
                     {
                         if (t.Item2.ContainsKey(c))
                         {
