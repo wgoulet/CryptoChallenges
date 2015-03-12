@@ -39,7 +39,6 @@ namespace challenge3
 
                 foreach (byte b in inbytes)
                 {
-                    //if(Convert.ToString(Convert.ToChar(b ^ i)))
                     char t = Convert.ToChar(b ^ i);
                     Dictionary<char, int> dict = freqmap[Convert.ToChar(i)];
                     if (dict.Keys.Contains<char>(t))
