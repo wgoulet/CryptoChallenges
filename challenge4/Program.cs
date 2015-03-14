@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace challenge3
+namespace challenge4
 {
     class Program
     {
-        /* etao
-         * The hex encoded string:
-
-            1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736
-            ... has been XOR'd against a single character. Find the key, decrypt the message.
-            You can do this by hand. But don't: write code to do it for you.
-         */
-
         static void Main(string[] args)
         {
             string instr = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+            char key;
+            System.Console.WriteLine(String.Format("Decrypted text {0} with key {1}",Program.decryptxor(instr, out key),key));
+            System.Console.ReadKey();
+
+        }
+        private static string decryptxor(string instr, out char key)
+        {
             byte[] inbytes = Program.hex2bytearray(instr);
             Dictionary<char, Dictionary<char, int>> freqmap = new Dictionary<char, Dictionary<char, int>>();
             for (int i = 0; i < 255; i++)
@@ -74,24 +73,23 @@ namespace challenge3
             // In case there are ties, look at the histcharcount structure and pick the 
             // key that has the highest frequency count for characters at the beginning
             // of the histogram
-            foreach(Tuple<int,char,Dictionary<char,int>> t in ecount)
+            foreach (Tuple<int, char, Dictionary<char, int>> t in ecount)
             {
-                if(t.Item1 > maxct)
+                if (t.Item1 > maxct)
                 {
                     maxct = t.Item1;
                 }
             }
             // Get set of tuples with maxct; this could be simplified with LINQ query
-            foreach(Tuple<int,char,Dictionary<char,int>> t in ecount)
+            foreach (Tuple<int, char, Dictionary<char, int>> t in ecount)
             {
-                if(t.Item1 == maxct)
+                if (t.Item1 == maxct)
                 {
-                    candidates.Add(Tuple.Create(t.Item2,t.Item3));
+                    candidates.Add(Tuple.Create(t.Item2, t.Item3));
                 }
             }
 
-            char key;
-            if(candidates.Count > 1)
+            if (candidates.Count > 1)
             {
                 // Pick candidate with highest count of chars 
                 // from the first 4 chars of the histogram
@@ -99,9 +97,9 @@ namespace challenge3
                 int index = 0;
                 int kindex = 0;
                 List<char> histogram = new List<char>();
-                histogram.AddRange(new char[] {'e','t','o','i'});
+                histogram.AddRange(new char[] { 'e', 't', 'o', 'i' });
                 int ct = 0;
-                foreach(Tuple<char,Dictionary<char,int>> t in candidates)
+                foreach (Tuple<char, Dictionary<char, int>> t in candidates)
                 {
                     foreach (char c in histogram)
                     {
@@ -110,8 +108,8 @@ namespace challenge3
                             ct += t.Item2[c];
                         }
                     }
-                    
-                    if(ct > histhi)
+
+                    if (ct > histhi)
                     {
                         histhi = ct;
                         kindex = index;
@@ -126,15 +124,23 @@ namespace challenge3
                 key = candidates.First().Item1;
             }
 
-            System.Console.WriteLine(String.Format("Using key {0} for decryption", key));
+            StringBuilder sb = new StringBuilder();
             foreach (byte b in inbytes)
             {
-                System.Console.Write(Convert.ToChar(b ^ (int)key));
+                sb.Append(Convert.ToChar(b ^ (int)key));
             }
-            System.Console.WriteLine();
-            System.Console.ReadKey();
+            return sb.ToString();
         }
 
+        static string bytearray2hexstr(byte[] inbytes)
+        {
+            StringBuilder tr = new StringBuilder();
+            foreach (byte b in inbytes)
+            {
+                tr.Append(Convert.ToString(b, 16));
+            }
+            return tr.ToString();
+        }
         static byte[] hex2bytearray(string instr)
         {
             StringBuilder tr = new StringBuilder();
@@ -150,15 +156,9 @@ namespace challenge3
             }
             return inbytes;
         }
-
-        static string bytearray2hexstr(byte[] inbytes)
-        {
-            StringBuilder tr = new StringBuilder();
-            foreach (byte b in inbytes)
-            {
-                tr.Append(Convert.ToString(b, 16));
-            }
-            return tr.ToString();
-        }
     }
 }
+
+
+
+
