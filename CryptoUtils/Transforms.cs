@@ -147,11 +147,26 @@ namespace CryptoUtils
             }
             return sb.ToString();
         }
-        public static string EncryptXor(string instr, string key)
+        public static string EncryptRotXor(string instr, string key)
         {
-            string retval = string.Empty;
-
-            return retval;
+            StringBuilder retval = new StringBuilder();
+            byte[] bstr = new byte[instr.Length];
+            int index = 0;
+            foreach(char c in instr)
+            {
+                bstr[index] = Convert.ToByte(c);
+                index++;
+            }
+            int j = 0;
+            int i = key.Length;
+            foreach(byte b in bstr)
+            {
+                if (j == key.Length)
+                    j = 0;
+                retval.Append(Convert.ToString(b ^ Convert.ToByte(key.ToCharArray()[j]),16));
+                j++;
+            }
+            return retval.ToString();
         }
     }
 }
