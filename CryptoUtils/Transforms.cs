@@ -158,12 +158,13 @@ namespace CryptoUtils
                 index++;
             }
             int j = 0;
-            int i = key.Length;
+            int value = 0;
             foreach(byte b in bstr)
             {
                 if (j == key.Length)
                     j = 0;
-                retval.Append(Convert.ToString(b ^ Convert.ToByte(key.ToCharArray()[j]),16));
+                value = b ^ Convert.ToByte(key.ToCharArray()[j]);
+                retval.Append(value.ToString("x2"));
                 j++;
             }
             return retval.ToString();

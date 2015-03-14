@@ -25,7 +25,8 @@ namespace challenge5
              */
 
             string s1 = "Burning 'em, if you ain't quick and nimble`r`nI go crazy when I hear a cymbal";
-            Transforms.EncryptRotXor(s1, "ICE");
+            System.Console.WriteLine(Transforms.EncryptRotXor(s1, "ICE"));
+            System.Console.ReadKey();
             
         }
     }
