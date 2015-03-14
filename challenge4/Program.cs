@@ -23,8 +23,8 @@ namespace challenge4
             string cleartext = string.Empty;
             while (!reader.EndOfStream)
             {
+                // If there is a 10% or greater match of digraphs/trigraphs/doubles, assume its english cleartext
                 cleartext = Program.DecryptXor(reader.ReadLine(), out key);
-                System.Console.WriteLine(String.Format("Likelihood english factor for {0} is {1}", cleartext.Trim(), Program.LikelyEnglish(cleartext)));
                 if (Program.LikelyEnglish(cleartext) > 0.1)
                     System.Console.WriteLine(String.Format("Found text {0} with key {1} in input file", cleartext.Trim(), key));
             }
