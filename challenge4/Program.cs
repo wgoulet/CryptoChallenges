@@ -19,7 +19,6 @@ namespace challenge4
         {
             StreamReader reader = File.OpenText("cdata.txt");
             char key;
-            //instr = "theronanththth";
             string cleartext = string.Empty;
             while (!reader.EndOfStream)
             {
