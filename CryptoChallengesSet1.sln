@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge3", "challenge3\ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge4", "challenge4\challenge4.csproj", "{ED1898AD-20CC-4F7E-B6BE-ED1D60E0ED8A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge5", "challenge5\challenge5.csproj", "{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoUtils", "CryptoUtils\CryptoUtils.csproj", "{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{ED1898AD-20CC-4F7E-B6BE-ED1D60E0ED8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED1898AD-20CC-4F7E-B6BE-ED1D60E0ED8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED1898AD-20CC-4F7E-B6BE-ED1D60E0ED8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
