@@ -3,20 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace challenge4
 {
     class Program
     {
+        /* Detect single-character XOR
+            One of the 60-character strings in this file has been encrypted by single-character XOR.
+            Find it.
+            (Your code from #3 should help.)
+         */
         static void Main(string[] args)
         {
-            string instr = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+            StreamReader reader = File.OpenText("cdata.txt");
             char key;
-            System.Console.WriteLine(String.Format("Decrypted text {0} with key {1}",Program.decryptxor(instr, out key),key));
+            //instr = "theronanththth";
+            string cleartext = string.Empty;
+            while (!reader.EndOfStream)
+            {
+                cleartext = Program.DecryptXor(reader.ReadLine(), out key);
+                System.Console.WriteLine(String.Format("Likelihood english factor for {0} is {1}", cleartext.Trim(), Program.LikelyEnglish(cleartext)));
+                if (Program.LikelyEnglish(cleartext) > 0.1)
+                    System.Console.WriteLine(String.Format("Found text {0} with key {1} in input file", cleartext.Trim(), key));
+            }
             System.Console.ReadKey();
 
         }
-        private static string decryptxor(string instr, out char key)
+        private static string DecryptXor(string instr, out char key)
         {
             byte[] inbytes = Program.hex2bytearray(instr);
             Dictionary<char, Dictionary<char, int>> freqmap = new Dictionary<char, Dictionary<char, int>>();
@@ -130,6 +145,70 @@ namespace challenge4
                 sb.Append(Convert.ToChar(b ^ (int)key));
             }
             return sb.ToString();
+        }
+
+        private static double LikelyEnglish(string instr)
+        {
+            /* From http://www.simonsingh.net/The_Black_Chamber/hintsandtips.html
+             * Order Of Frequency Of Digraphs
+                th er on an re he in ed nd ha at en es of or nt ea ti to it st io le is ou ar as de rt ve
+             * Order Of Frequency Of Trigraphs
+                the and tha ent ion tio for nde has nce edt tis oft sth men
+             * Order Of Frequency Of Most Common Doubles
+                ss ee tt ff ll mm oo
+            */
+            double allsymbolcount = 0;
+            // Initialize data structures that will hold maps of a count of each digraph/trigraph/double string
+            Dictionary<string, List<string>> symmap = new Dictionary<string, List<string>>();
+            symmap["di"] = new List<string>();
+            string[] di = new string[]{ "th", "er", "on", "an", "re", "he", "in", "ed", "nd", "ha", "at", "en", "es", "of", "or", "nt", "ea", "ti", "to", "it", "st", "io", "le", "is", "ou", "ar", "as", "de", "rt", "ve" };
+            string[] tri = new string[] { "the", "and", "tha", "ent", "ion", "tio", "for", "nde", "has", "nce", "edt", "tis", "oft", "sth", "men" };
+            string[] dou = new string[] { "ss", "ee", "tt", "ff", "ll", "mm", "oo" };
+            Dictionary<string, Dictionary<string,Dictionary<string, int>>> freqmap = new Dictionary<string, Dictionary<string,Dictionary<string, int>>>();
+            freqmap[instr] = new Dictionary<string,Dictionary<string, int>>();
+            freqmap[instr]["di"] = new Dictionary<string,int>();
+            freqmap[instr]["tri"] = new Dictionary<string,int>();
+            freqmap[instr]["dou"] = new Dictionary<string,int>();
+            foreach(string s in di)
+                freqmap[instr]["di"][s] = 0; 
+            foreach(string s2 in tri)
+                freqmap[instr]["tri"][s2] = 0;
+            foreach(string s3 in dou)
+                freqmap[instr]["dou"][s3] = 0;
+
+            // Iterate through the digraph/trigraph/double maps and count the number of times
+            // each symbol is found in the input string.
+            // For each digraph/trigraph/double map, count the number of symbols with a non-zero count. 
+            // This sum, divided by the total count of all symbols, will be our likely value
+            double actual = 0;
+             
+            List<string> keys = new List<string>();
+            keys.AddRange(freqmap[instr]["di"].Keys);
+            for (int i = 0; i < keys.Count;i++ )
+            {
+                if((freqmap[instr]["di"][keys[i]] = Regex.Matches(instr, keys[i]).Count) > 0)
+                    actual++;
+            }
+
+            keys = new List<string>();
+            keys.AddRange(freqmap[instr]["tri"].Keys);
+            for (int i = 0; i < keys.Count;i++ )
+            {
+                if((freqmap[instr]["tri"][keys[i]] = Regex.Matches(instr, keys[i]).Count) > 0)
+                    actual++;
+            }
+            
+            keys = new List<string>();
+            keys.AddRange(freqmap[instr]["dou"].Keys);
+            for (int i = 0; i < keys.Count;i++ )
+            {
+                if ((freqmap[instr]["dou"][keys[i]] = Regex.Matches(instr, keys[i]).Count) > 0)
+                    actual++;
+            }
+
+            allsymbolcount = freqmap[instr]["di"].Count + freqmap[instr]["tri"].Count + freqmap[instr]["dou"].Count;
+
+            return actual/allsymbolcount;
         }
 
         static string bytearray2hexstr(byte[] inbytes)
