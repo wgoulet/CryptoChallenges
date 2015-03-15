@@ -72,5 +72,37 @@ namespace CryptoUtils
 
             return actual / allsymbolcount;
         }
+
+        public static int HammingDistance(string s1,string s2)
+        {
+            int diffcount = 0;
+            bool s1longer = false;
+            int currval = 0;
+            if (s1.Length != s2.Length)
+            {
+                diffcount = Math.Abs(s1.Length - s2.Length) * 8;
+                if ((s1.Length - s2.Length) > 0)
+                    s1longer = true;
+            }
+            int len = 0;
+            if (s1longer)
+                len = s2.Length;
+            else
+                len = s1.Length;
+
+            for (int k = 0; k < len; k++)
+            {
+                currval = Convert.ToByte(s1.ToCharArray()[k] ^ s2.ToCharArray()[k]);
+                for (int j = 0; j < 8; j++)
+                {
+                    if (currval % 2 != 0)
+                    {
+                        diffcount++;
+                    }
+                    currval = currval >> 1;
+                }
+            }
+            return diffcount;
+        }
     }
 }
