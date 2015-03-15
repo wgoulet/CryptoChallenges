@@ -20,6 +20,7 @@ namespace challenge6
             int maxkeylen = 40;
             int mineditdist = int.MaxValue;
             MemoryStream memstr = new MemoryStream(inbytes);
+            Dictionary<int, List<int>> keylenmap = new Dictionary<int, List<int>>();
             int index = 0;
             int readct = 0;
             for (int i = 2; i < maxkeylen; i++)
@@ -30,11 +31,20 @@ namespace challenge6
                 memstr.Read(b2,0,i);
                 index = (int)memstr.Position;
                 int cdist = CryptoUtils.Detectors.HammingDistance(s1, s2);
-                if ((cdist / i ) < mineditdist)
+                if ((cdist / i) < mineditdist)
+                {
                     mineditdist = cdist / i;
+                    if (!keylenmap.ContainsKey(mineditdist))
+                        keylenmap[mineditdist] = new List<int>();
+                    keylenmap[mineditdist].Add(i);
+                }
             }
-            System.Console.WriteLine(mineditdist);
+            foreach(int l in keylenmap[mineditdist])
+            {
+                System.Console.WriteLine(String.Format("Keylen {0} has smallest HammingDistance {1}",l,mineditdist));
+            }
 
+            System.Console.ReadKey();
         }
 
 
