@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CryptoUtils;
 
 namespace challenge3
 {
@@ -20,6 +21,9 @@ namespace challenge3
         {
             string instr = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
             byte[] inbytes = Program.hex2bytearray(instr);
+            char key;
+            string retstr = Transforms.DecryptXor("", out key, inbytes);
+
             Dictionary<char, Dictionary<char, int>> freqmap = new Dictionary<char, Dictionary<char, int>>();
             for (int i = 0; i < 255; i++)
             {
@@ -90,7 +94,6 @@ namespace challenge3
                 }
             }
 
-            char key;
             if(candidates.Count > 1)
             {
                 // Pick candidate with highest count of chars 

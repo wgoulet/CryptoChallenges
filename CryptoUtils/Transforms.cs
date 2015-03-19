@@ -8,7 +8,7 @@ namespace CryptoUtils
 {
     public static class Transforms
     {
-        static string bytearray2hexstr(byte[] inbytes)
+        public static string bytearray2hexstr(byte[] inbytes)
         {
             StringBuilder tr = new StringBuilder();
             foreach (byte b in inbytes)
@@ -17,12 +17,12 @@ namespace CryptoUtils
             }
             return tr.ToString();
         }
-        static byte[] hex2bytearray(string instr)
+        public static byte[] hex2bytearray(string instr)
         {
             StringBuilder tr = new StringBuilder();
             byte[] inbytes = new byte[instr.Length / 2];
             int bytect = 0;
-            for (int i = 0; i < instr.Length; i += 2)
+            for (int i = 0; i < instr.Length - 1; i += 2)
             {
                 tr.Append(instr[i]);
                 tr.Append(instr[i + 1]);
@@ -32,11 +32,12 @@ namespace CryptoUtils
             }
             return inbytes;
         }
-        public static string DecryptXor(string instr, out char key)
+        public static string DecryptXor(string instr, out char key,byte[] inbytes = null)
         {
-            byte[] inbytes = Transforms.hex2bytearray(instr);
+            if(inbytes == null)
+                inbytes = Transforms.hex2bytearray(instr);
             Dictionary<char, Dictionary<char, int>> freqmap = new Dictionary<char, Dictionary<char, int>>();
-            for (int i = 0; i < 255; i++)
+            for (int i = 32; i < 128; i++)
             {
                 freqmap[Convert.ToChar(i)] = new Dictionary<char, int>();
                 // # Histogram of english frequencies is from http://math.fau.edu/richman/histogram.htm
@@ -152,14 +153,14 @@ namespace CryptoUtils
             StringBuilder retval = new StringBuilder();
             byte[] bstr = new byte[instr.Length];
             int index = 0;
-            foreach(char c in instr)
+            foreach (char c in instr)
             {
                 bstr[index] = Convert.ToByte(c);
                 index++;
             }
             int j = 0;
             int value = 0;
-            foreach(byte b in bstr)
+            foreach (byte b in bstr)
             {
                 if (j == key.Length)
                     j = 0;
