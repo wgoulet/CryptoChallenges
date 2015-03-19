@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace CryptoUtils
@@ -32,7 +33,29 @@ namespace CryptoUtils
             }
             return inbytes;
         }
-        public static string DecryptXor(string instr, out char key,byte[] inbytes = null)
+
+        public static string DecryptRotXor(byte[] inbytes,string key)
+        {
+            string retval = string.Empty;
+            byte[] keybytes = Encoding.ASCII.GetBytes(key);
+            int keylen = keybytes.Length;
+            MemoryStream bstr = new MemoryStream(inbytes);
+            byte[] buf = new byte[keylen];
+            StringBuilder plaintext = new StringBuilder();
+            while (bstr.Read(buf, 0, keylen) > 0)
+            {
+                for(int i = 0; i < keylen; i++)
+                {
+                    buf[i] = Convert.ToByte(buf[i] ^ keybytes[i]);
+                }
+                plaintext.Append(Encoding.ASCII.GetString(buf));
+            }
+            retval = plaintext.ToString();
+            
+            return retval;
+        }
+        
+        public static string FindKeyDecryptXor(string instr, out char key,byte[] inbytes = null)
         {
             if(inbytes == null)
                 inbytes = Transforms.hex2bytearray(instr);
@@ -114,7 +137,7 @@ namespace CryptoUtils
                 int index = 0;
                 int kindex = 0;
                 List<char> histogram = new List<char>();
-                histogram.AddRange(new char[] { 'e', 't', 'o', 'i' });
+                histogram.AddRange(new char[] { 'e', 't','o'});
                 int ct = 0;
                 foreach (Tuple<char, Dictionary<char, int>> t in candidates)
                 {

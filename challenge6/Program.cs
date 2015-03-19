@@ -31,14 +31,6 @@ namespace challenge6
                 byte[] b2 = new byte[i];
                 readct = memstr.Read(b1,0,i);
                 memstr.Read(b2,0,i);
-                foreach(byte b in b1)
-                    sb.Append(Convert.ToString(b, 2).PadLeft(8,'0'));
-                sb.AppendLine();
-                foreach (byte b in b2)
-                    sb.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
-                sb.AppendLine();
-                Console.WriteLine(sb.ToString());
-
                 int cdist = CryptoUtils.Detectors.HammingDistance(b1, b2);
                 //if ((cdist / i) <= mineditdist)
                 //{
@@ -99,7 +91,7 @@ namespace challenge6
                     foreach (byte[] tblock in tblocks)
                     {
                         char key = char.MinValue;
-                        ptext.Add(CryptoUtils.Transforms.DecryptXor(string.Empty, out key, tblock));
+                        ptext.Add(CryptoUtils.Transforms.FindKeyDecryptXor(string.Empty, out key, tblock));
                         keys.Add(key);
                     }
                     StringBuilder sb = new StringBuilder();
@@ -108,6 +100,12 @@ namespace challenge6
                 }
             }
 
+            // From above, we know the probable key. Let user type in key from best looking output displayed above
+            System.Console.WriteLine("Enter the guessed key from the list above:");
+            string keystr = System.Console.ReadLine();
+
+            memstr.Seek(0, SeekOrigin.Begin);
+            System.Console.WriteLine(CryptoUtils.Transforms.DecryptRotXor(inbytes, keystr));
             System.Console.ReadKey();
         }
 
