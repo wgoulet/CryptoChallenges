@@ -7,7 +7,7 @@
     <ProjectGuid>{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CryptoUtils</RootNamespace>
+    <RootNamespace>CryptoChallengesSet1</RootNamespace>
     <AssemblyName>CryptoUtils</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

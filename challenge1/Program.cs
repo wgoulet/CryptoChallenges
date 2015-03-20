@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace challenge1
+namespace CryptoChallengesSet1
 {
     class Program
     {

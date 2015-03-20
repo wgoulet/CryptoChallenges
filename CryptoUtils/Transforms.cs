@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace CryptoUtils
+namespace CryptoChallengesSet1
 {
     public static class Transforms
     {

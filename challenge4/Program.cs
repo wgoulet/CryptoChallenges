@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.IO;
-using CryptoUtils;
 
-namespace challenge4
+namespace CryptoChallengesSet1
 {
     class Program
     {
@@ -24,8 +23,8 @@ namespace challenge4
             while (!reader.EndOfStream)
             {
                 // If there is a 10% or greater match of digraphs/trigraphs/doubles, assume its english cleartext
-                cleartext = CryptoUtils.Transforms.DecryptXor(reader.ReadLine(), out key);
-                if (CryptoUtils.Detectors.LikelyEnglish(cleartext) > 0.1)
+                cleartext = Transforms.FindKeyDecryptXor(reader.ReadLine(), out key);
+                if (Detectors.LikelyEnglish(cleartext) > 0.1)
                     System.Console.WriteLine(String.Format("Found text {0} with key {1} in input file", cleartext.Trim(), key));
             }
             System.Console.ReadKey();

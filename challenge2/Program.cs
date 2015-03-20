@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace challenge2
+namespace CryptoChallengesSet1
 {
     class Program
     {

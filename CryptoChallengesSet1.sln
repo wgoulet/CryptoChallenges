@@ -4,18 +4,41 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge1", "challenge1\challenge1.csproj", "{FB4EED2F-949B-4277-BC95-EB1B384D0DF3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge2", "challenge2\challenge2.csproj", "{420F263E-070C-41F3-B20E-EBE9A7CF5084}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge3", "challenge3\challenge3.csproj", "{82361ECF-F535-4065-8C9D-139E136B6CA9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge4", "challenge4\challenge4.csproj", "{ED1898AD-20CC-4F7E-B6BE-ED1D60E0ED8A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge5", "challenge5\challenge5.csproj", "{AA76B87E-EF18-4A7B-AC37-DB562D2DBC17}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoUtils", "CryptoUtils\CryptoUtils.csproj", "{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge6", "challenge6\challenge6.csproj", "{6275B7A5-5B00-4826-9261-43A58272EF18}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "challenge7", "challenge7\challenge7.csproj", "{D3F34802-FACC-4E87-B915-A03930ECE057}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F} = {FDD9D307-7DC1-4554-B8DB-59E6BE4C0E9F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +74,10 @@ Global
 		{6275B7A5-5B00-4826-9261-43A58272EF18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6275B7A5-5B00-4826-9261-43A58272EF18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6275B7A5-5B00-4826-9261-43A58272EF18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F34802-FACC-4E87-B915-A03930ECE057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F34802-FACC-4E87-B915-A03930ECE057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3F34802-FACC-4E87-B915-A03930ECE057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3F34802-FACC-4E87-B915-A03930ECE057}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

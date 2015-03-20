@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-using CryptoUtils;
 
-namespace challenge6
+namespace CryptoChallengesSet1
 {
     class Program
     {
@@ -31,7 +30,7 @@ namespace challenge6
                 byte[] b2 = new byte[i];
                 readct = memstr.Read(b1,0,i);
                 memstr.Read(b2,0,i);
-                int cdist = CryptoUtils.Detectors.HammingDistance(b1, b2);
+                int cdist = Detectors.HammingDistance(b1, b2);
                 //if ((cdist / i) <= mineditdist)
                 //{
                     mineditdist = cdist / (double)i;
@@ -91,7 +90,7 @@ namespace challenge6
                     foreach (byte[] tblock in tblocks)
                     {
                         char key = char.MinValue;
-                        ptext.Add(CryptoUtils.Transforms.FindKeyDecryptXor(string.Empty, out key, tblock));
+                        ptext.Add(Transforms.FindKeyDecryptXor(string.Empty, out key, tblock));
                         keys.Add(key);
                     }
                     StringBuilder sb = new StringBuilder();
@@ -105,7 +104,7 @@ namespace challenge6
             string keystr = System.Console.ReadLine();
 
             memstr.Seek(0, SeekOrigin.Begin);
-            System.Console.WriteLine(CryptoUtils.Transforms.DecryptRotXor(inbytes, keystr));
+            System.Console.WriteLine(Transforms.DecryptRotXor(inbytes, keystr));
             System.Console.ReadKey();
         }
 
