@@ -29,11 +29,6 @@ namespace challenge8
                 linemap.Add(s, new List<int>());
             }
             // Look for any strings that have repeated 16 byte blocks in them
-            byte[] b1 = {0xff,0xfa,0x3b};
-            byte[] b2 = {0xff,0xfa,0x3b};
-            dedup.Add(b1);
-            if(!dedup.Contains(b2))
-                dedup.Add(b2);
             foreach (KeyValuePair<string, List<int>> e in linemap)
             {
                 byte[] inbytes = Convert.FromBase64String(e.Key);
@@ -43,10 +38,12 @@ namespace challenge8
                 for (int i = 0; i < numblocks; i++)
                 {
                     block = reader.ReadBytes(16);
+                    // If we find a duplicate block in the current line
+                    // store the line and the index of the duplicate block
                     if (!dedup.Contains(block))
                         dedup.Add(block);
                     else
-                        linemap[e.Key].Add(1);
+                        linemap[e.Key].Add(i);
 
                 }
             }
@@ -54,8 +51,13 @@ namespace challenge8
             {
                 if (e.Value.Count == 0)
                     continue;
-                if (e.Value.First<int>() > 0)
-                    System.Console.WriteLine(e.Key);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("Ciphertext from input {0} contains duplicate blocks at ",e.Key);
+                foreach(int i in e.Value)
+                {
+                    sb.AppendFormat("{0} ", i);
+                }
+                System.Console.WriteLine(sb.ToString());
             }
             System.Console.ReadKey();
         }
