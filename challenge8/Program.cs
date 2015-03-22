@@ -23,12 +23,16 @@ namespace challenge8
             byte[] block = new byte[16];
             HashSet<byte[]> dedup = new HashSet<byte[]>(new ByteHashComparer());
             string[] inlines = getWebStuff("http://cryptopals.com/static/challenge-data/8.txt").Result.Split(delims);
+            //string[] inlines = { getWebStuff("http://cryptopals.com/static/challenge-data/8.txt").Result };
+            
             // First, load the lines into a dictionary that we can use to store info about them in
             foreach (string s in inlines)
             {
-                linemap.Add(s, new List<int>());
+                linemap.Add(s.Replace("\r\n", ""), new List<int>());
             }
+            StringBuilder sb = new StringBuilder();
             // Look for any strings that have repeated 16 byte blocks in them
+            int linemapct = 1;
             foreach (KeyValuePair<string, List<int>> e in linemap)
             {
                 byte[] inbytes = Convert.FromBase64String(e.Key);
@@ -38,25 +42,45 @@ namespace challenge8
                 for (int i = 0; i < numblocks; i++)
                 {
                     block = reader.ReadBytes(16);
+                    foreach(byte b in block)
+                    {
+                        sb.AppendFormat("{0}", b);
+                        sb.AppendLine();
+                    }
                     // If we find a duplicate block in the current line
                     // store the line and the index of the duplicate block
                     if (!dedup.Contains(block))
                         dedup.Add(block);
                     else
+                    {
                         linemap[e.Key].Add(i);
+                    }
 
                 }
+                linemap[e.Key].Add(linemapct);
+                linemapct++;
             }
             foreach(KeyValuePair<string,List<int>> e in linemap)
             {
-                if (e.Value.Count == 0)
-                    continue;
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("Ciphertext from input {0} contains duplicate blocks at ",e.Key);
-                foreach(int i in e.Value)
+               
+                block = Convert.FromBase64String(e.Key);
+                foreach(byte b in block)
                 {
-                    sb.AppendFormat("{0} ", i);
+                    sb.AppendFormat("{0}", b);
+                    sb.AppendLine();
                 }
+                StreamWriter wri = new StreamWriter(".\\freqdat.csv");
+                wri.WriteLine(sb.ToString());
+                wri.Close();
+                if (e.Value.Count == 1)
+                    continue;
+                sb = new StringBuilder();
+                sb.AppendFormat("Ciphertext from input {0} contains duplicate blocks at ",e.Key);
+                for(int i = 0;i < e.Value.Count - 1;i++)
+                {
+                    sb.AppendFormat("{0} ", e.Value[i]);
+                }
+                sb.AppendFormat(" at line {0}",e.Value.Last<int>());
                 System.Console.WriteLine(sb.ToString());
             }
             System.Console.ReadKey();
