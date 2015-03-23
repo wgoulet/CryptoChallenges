@@ -193,6 +193,19 @@ namespace CryptoChallengesSet1
             }
             return retval.ToString();
         }
+        public static byte[] xorbytes(byte[] b1, byte[] b2)
+        {
+            if (b1.Length == b2.Length)
+            {
+                byte[] b3 = new byte[b1.Length];
+                for (int i = 0; i < b1.Length; i++)
+                {
+                    b3[i] = Convert.ToByte(b1[i] ^ b2[i]);
+                }
+                return b3;
+            }
+            return null;
+        }
         public static byte[] pkcs7pad(byte[] inbytes, int blocksize)
         {
             byte[] retval = new byte[blocksize];
