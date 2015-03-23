@@ -34,7 +34,7 @@ namespace CryptoChallengesSet1
             return inbytes;
         }
 
-        public static string DecryptRotXor(byte[] inbytes,string key)
+        public static string DecryptRotXor(byte[] inbytes, string key)
         {
             string retval = string.Empty;
             byte[] keybytes = Encoding.ASCII.GetBytes(key);
@@ -44,20 +44,20 @@ namespace CryptoChallengesSet1
             StringBuilder plaintext = new StringBuilder();
             while (bstr.Read(buf, 0, keylen) > 0)
             {
-                for(int i = 0; i < keylen; i++)
+                for (int i = 0; i < keylen; i++)
                 {
                     buf[i] = Convert.ToByte(buf[i] ^ keybytes[i]);
                 }
                 plaintext.Append(Encoding.ASCII.GetString(buf));
             }
             retval = plaintext.ToString();
-            
+
             return retval;
         }
-        
-        public static string FindKeyDecryptXor(string instr, out char key,byte[] inbytes = null)
+
+        public static string FindKeyDecryptXor(string instr, out char key, byte[] inbytes = null)
         {
-            if(inbytes == null)
+            if (inbytes == null)
                 inbytes = Transforms.hex2bytearray(instr);
             Dictionary<char, Dictionary<char, int>> freqmap = new Dictionary<char, Dictionary<char, int>>();
             for (int i = 32; i < 128; i++)
@@ -137,7 +137,7 @@ namespace CryptoChallengesSet1
                 int index = 0;
                 int kindex = 0;
                 List<char> histogram = new List<char>();
-                histogram.AddRange(new char[] { 'e', 't','o'});
+                histogram.AddRange(new char[] { 'e', 't', 'o' });
                 int ct = 0;
                 foreach (Tuple<char, Dictionary<char, int>> t in candidates)
                 {
@@ -192,6 +192,25 @@ namespace CryptoChallengesSet1
                 j++;
             }
             return retval.ToString();
+        }
+        public static byte[] pkcs7pad(byte[] inbytes, int blocksize)
+        {
+            byte[] retval = new byte[blocksize];
+            BinaryWriter writer = new BinaryWriter(new MemoryStream(retval));
+            int bct = 0;
+            foreach (byte b in inbytes)
+            {
+                writer.Write(b);
+                bct++;
+            }
+            // Get padding length
+            int padlen = blocksize - inbytes.Length;
+            for (int i = 0; i < padlen; i++)
+            {
+                writer.Write(Convert.ToByte(padlen));
+            }
+            writer.Close();
+            return retval;
         }
     }
 }

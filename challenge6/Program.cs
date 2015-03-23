@@ -23,14 +23,19 @@ namespace CryptoChallengesSet1
             Dictionary<double, List<int>> keylenmap = new Dictionary<double, List<int>>();
             int index = 0;
             int readct = 0;
+            int cdist = 0;
             for (int i = 2; i < maxkeylen; i++)
             {
                 byte[] b1 = new byte[i];
                 StringBuilder sb = new StringBuilder();
                 byte[] b2 = new byte[i];
-                readct = memstr.Read(b1,0,i);
-                memstr.Read(b2,0,i);
-                int cdist = Detectors.HammingDistance(b1, b2);
+                while (memstr.Position < memstr.Length - i * 2)
+                {
+                    memstr.Read(b1, 0, i);
+                    memstr.Read(b2, 0, i);
+                    cdist += Detectors.HammingDistance(b1, b2);
+                }
+                Console.WriteLine(String.Format("Keylen {0} HD {1}", i, cdist));
                 //if ((cdist / i) <= mineditdist)
                 //{
                     mineditdist = cdist / (double)i;
