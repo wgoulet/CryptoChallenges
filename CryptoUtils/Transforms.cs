@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace CryptoChallengesSet1
 {
     public static class Transforms
     {
+        public const int Encrypt = 1;
+        public const int Decrypt = 2;
         public static string bytearray2hexstr(byte[] inbytes)
         {
             StringBuilder tr = new StringBuilder();
@@ -223,6 +226,95 @@ namespace CryptoChallengesSet1
                 writer.Write(Convert.ToByte(padlen));
             }
             writer.Close();
+            return retval;
+        }
+
+        public static byte[] aescbc(byte[] iv, byte[] key, byte[] inbytes, int mode)
+        {
+            byte[] retval = null;
+            if (mode == Transforms.Decrypt)
+            {
+                int blocksize = key.Length; // blocksize is same as keysize
+                AesCryptoServiceProvider acsp = new AesCryptoServiceProvider();
+                KeySizes[] sizes = acsp.LegalKeySizes;
+                acsp.Key = key;
+                acsp.Mode = CipherMode.ECB;
+                acsp.Padding = PaddingMode.None;
+                ICryptoTransform aes = acsp.CreateDecryptor();
+                // Since we're gonna be reading in bytes, the numblocks
+                // needs to be calculated as number of 16 byte blocks
+                int numblocks = inbytes.Length / blocksize;
+                BinaryWriter writer = new BinaryWriter(new MemoryStream());
+                BinaryReader reader = new BinaryReader(new MemoryStream(inbytes));
+                List<byte[]> prevblocks = new List<byte[]>();
+                byte[] prevblock = null;
+                prevblocks.Add(iv);
+                for (int i = 0; i < numblocks; i++)
+                {
+                    if (i != numblocks - 1)
+                    {
+                        // Use normal transform until we get to the final block
+                        byte[] iblock = reader.ReadBytes(blocksize);
+                        byte[] oblock = new byte[blocksize];
+                        aes.TransformBlock(iblock, 0, blocksize, oblock, 0);
+                        // Recover previous ciphertext block, so back
+                        // up 2 blocks worth (16 bytes) only if we have
+                        // already used the IV
+                        if (prevblocks.Count == 1)
+                        {
+                            prevblock = prevblocks.Last();
+                        }
+                        else
+                        {
+                            long currpos = reader.BaseStream.Position;
+                            reader.BaseStream.Seek(currpos - blocksize * 2, SeekOrigin.Begin);
+                            prevblock = reader.ReadBytes(blocksize);
+                            reader.BaseStream.Seek(currpos, SeekOrigin.Begin);
+                        }
+                        prevblocks.Add(CryptoChallengesSet1.Transforms.xorbytes(prevblock, oblock));
+                    }
+                    else
+                    {
+                        byte[] iblock = reader.ReadBytes((int)reader.BaseStream.Length - (int)reader.BaseStream.Position);
+                        byte[] oblock = aes.TransformFinalBlock(iblock, 0, iblock.Length);
+                        // Recover previous ciphertext block, so back
+                        // up 2 blocks worth (16 bytes)
+                        long currpos = reader.BaseStream.Position;
+                        reader.BaseStream.Seek(currpos - blocksize * 2, SeekOrigin.Begin);
+                        prevblock = reader.ReadBytes(blocksize);
+                        reader.BaseStream.Seek(currpos, SeekOrigin.Begin);
+                        prevblocks.Add(CryptoChallengesSet1.Transforms.xorbytes(prevblock, oblock));
+                    }
+                }
+                retval = new byte[prevblocks.Count * (blocksize)];
+                int bcount = 0;
+                foreach (byte[] b in prevblocks)
+                {
+                    Array.Copy(b, 0, retval, bcount, b.Length);
+                    bcount += blocksize;
+                }
+                return retval;
+            }
+            else if(mode == Encrypt)
+            {
+                int blocksize = key.Length; // blocksize is same as keysize
+                AesCryptoServiceProvider acsp = new AesCryptoServiceProvider();
+                KeySizes[] sizes = acsp.LegalKeySizes;
+                acsp.Key = key;
+                acsp.Mode = CipherMode.ECB;
+                acsp.Padding = PaddingMode.None;
+                ICryptoTransform aes = acsp.CreateEncryptor();
+                // Since we're gonna be reading in bytes, the numblocks
+                // needs to be calculated as number of 16 byte blocks
+                int numblocks = inbytes.Length / blocksize;
+                BinaryWriter writer = new BinaryWriter(new MemoryStream());
+                BinaryReader reader = new BinaryReader(new MemoryStream(inbytes));
+                List<byte[]> prevblocks = new List<byte[]>();
+                byte[] prevblock = null;
+                prevblocks.Add(iv);
+
+            }
+
             return retval;
         }
     }
