@@ -21,6 +21,15 @@ namespace s2challenge2
             sb.Append(Encoding.ASCII.GetString(block));
             Console.WriteLine(sb.ToString());
             Console.ReadKey();
+            byte[] eblock = CryptoChallengesSet1.Transforms.aescbc(iv, key, block, CryptoChallengesSet1.Transforms.Encrypt, true);
+            string estring = Convert.ToBase64String(eblock);
+            Console.WriteLine(estring);
+            Console.ReadKey();
+            block = CryptoChallengesSet1.Transforms.aescbc(iv, key, eblock, CryptoChallengesSet1.Transforms.Decrypt);
+            sb = new StringBuilder();
+            sb.Append(Encoding.ASCII.GetString(block));
+            Console.WriteLine(sb.ToString());
+            Console.ReadKey();
         }
     }
 }
