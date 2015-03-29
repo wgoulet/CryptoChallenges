@@ -239,14 +239,14 @@ namespace CryptoChallengesSet1
                 KeySizes[] sizes = acsp.LegalKeySizes;
                 acsp.Key = key;
                 acsp.Mode = CipherMode.ECB;
-                if (pad)
-                    acsp.Padding = PaddingMode.PKCS7;
-                else
-                    acsp.Padding = PaddingMode.None;
+                //if (pad)
+                 //  acsp.Padding = PaddingMode.PKCS7;
+                //else
+                   acsp.Padding = PaddingMode.None;
                 ICryptoTransform aes = acsp.CreateDecryptor();
                 // Since we're gonna be reading in bytes, the numblocks
                 // needs to be calculated as number of 16 byte blocks
-                int numblocks = inbytes.Length / blocksize;
+                int numblocks = (int)Math.Ceiling((double)inbytes.Length / (double)blocksize);
                 BinaryWriter writer = new BinaryWriter(new MemoryStream());
                 BinaryReader reader = new BinaryReader(new MemoryStream(inbytes));
                 List<byte[]> prevblocks = new List<byte[]>();
@@ -289,6 +289,8 @@ namespace CryptoChallengesSet1
                         prevblocks.Add(CryptoChallengesSet1.Transforms.xorbytes(prevblock, oblock));
                     }
                 }
+                // Remove the IV from the prevblocks list before processing
+                prevblocks.Remove(iv);
                 retval = new byte[prevblocks.Count * (blocksize)];
                 int bcount = 0;
                 foreach (byte[] b in prevblocks)
@@ -296,7 +298,17 @@ namespace CryptoChallengesSet1
                     Array.Copy(b, 0, retval, bcount, b.Length);
                     bcount += blocksize;
                 }
-                return retval;
+                if (pad)
+                {
+                    int numpadbytes = retval.Last();
+                    byte[] pbuf = new byte[retval.Length - numpadbytes];
+                    Array.Copy(retval, pbuf, pbuf.Length);
+                    return pbuf;
+                }
+                else
+                {
+                    return retval;
+                }
             }
             else if (mode == Encrypt)
             {
@@ -305,14 +317,12 @@ namespace CryptoChallengesSet1
                 KeySizes[] sizes = acsp.LegalKeySizes;
                 acsp.Key = key;
                 acsp.Mode = CipherMode.ECB;
-                if (pad)
-                    acsp.Padding = PaddingMode.PKCS7;
-                else
-                    acsp.Padding = PaddingMode.None;
                 ICryptoTransform aes = acsp.CreateEncryptor();
                 // Since we're gonna be reading in bytes, the numblocks
-                // needs to be calculated as number of 16 byte blocks
-                int numblocks = inbytes.Length / blocksize;
+                // needs to be calculated as number of 16 byte blocks.
+                // Also make sure to allocate enough blocks to hold any
+                // trailing bytes that don't fit into a whole block
+                int numblocks = (int)Math.Ceiling((double)inbytes.Length / (double)blocksize);
                 BinaryWriter writer = new BinaryWriter(new MemoryStream());
                 BinaryReader reader = new BinaryReader(new MemoryStream(inbytes));
                 List<byte[]> prevblocks = new List<byte[]>();
@@ -329,14 +339,15 @@ namespace CryptoChallengesSet1
                         aes.TransformBlock(CryptoChallengesSet1.Transforms.xorbytes(prevblock, inblock), 0, blocksize, outblock, 0);
                         prevblocks.Add((byte[])outblock.Clone()); // don't pass array in by reference, but copy it into prevblocks
                     }
+                    
                     else
                     {
                         inblock = reader.ReadBytes((int)reader.BaseStream.Length - (int)reader.BaseStream.Position);
                         byte[] pblock = null;
                         if (inblock.Length % blocksize != 0) // padding required
-                            pblock = pkcs7pad(inblock, blocksize);
+                           pblock = pkcs7pad(inblock, blocksize);
                         else
-                            pblock = inblock;
+                           pblock = inblock;
                         prevblock = prevblocks.Last();
                         byte[] fblock = new byte[pblock.Length];
                         aes.TransformBlock(CryptoChallengesSet1.Transforms.xorbytes(pblock, prevblock), 0, pblock.Length, fblock, 0);
@@ -344,6 +355,8 @@ namespace CryptoChallengesSet1
                     }
 
                 }
+                // Remove the IV before processing
+                prevblocks.Remove(iv);
                 retval = new byte[prevblocks.Count * (blocksize)];
                 int bcount = 0;
                 foreach (byte[] b in prevblocks)
@@ -351,6 +364,28 @@ namespace CryptoChallengesSet1
                     Array.Copy(b, 0, retval, bcount, b.Length);
                     bcount += blocksize;
                 }
+            }
+
+            return retval;
+        }
+
+        public static byte[] aesecb(byte[] key, byte[] inbytes, int mode, bool pad = false)
+        {
+            AesCryptoServiceProvider acsp = new AesCryptoServiceProvider();
+            acsp.Key = key;
+            acsp.Mode = CipherMode.ECB;
+            byte[] retval = null;
+            if (pad)
+                acsp.Padding = PaddingMode.PKCS7;
+            if(mode == Transforms.Encrypt)
+            {
+                ICryptoTransform enc = acsp.CreateEncryptor();
+                retval = enc.TransformFinalBlock(inbytes, 0, inbytes.Length);
+            }
+            else
+            {
+                ICryptoTransform dec = acsp.CreateDecryptor();
+                retval = dec.TransformFinalBlock(inbytes, 0, inbytes.Length);
             }
 
             return retval;
@@ -366,6 +401,7 @@ namespace CryptoChallengesSet1
             List<byte[]> inblocks = new List<byte[]>();
             List<byte[]> pblocks = new List<byte[]>();
             int count = 0;
+            Random rng = new Random();
             byte[] block = new byte[blocksize];
             for (int i = 0; i < inbytes.Length; i++)
             {
@@ -392,11 +428,12 @@ namespace CryptoChallengesSet1
                 }
             }
             // Append bytes before/after plaintext
+            int outlen = 0;
             foreach (byte[] bl in inblocks)
             {
-                Random rng = new Random();
                 int numf = rng.Next(5, 10);
                 int numb = rng.Next(5, 10);
+                outlen += numf + bl.Length + numb;
                 byte[] pblock = new byte[numf + bl.Length + numb];
                 byte[] fb = Generators.genRandBytes(numf, true);
                 byte[] bb = Generators.genRandBytes(numb, true);
@@ -405,6 +442,24 @@ namespace CryptoChallengesSet1
                 Array.Copy(bb, 0, pblock, fb.Length + bl.Length, bb.Length);
                 pblocks.Add((byte[])pblock.Clone());
             }
+            // Prepare a big buffer to feed into the encryption functions
+            byte[] outbuf = new byte[outlen];
+            BinaryWriter writer = new BinaryWriter(new MemoryStream(outbuf));
+            foreach(byte[] pblock in pblocks)
+            {
+                writer.Write(pblock);
+            }
+            switch(rng.Next(1,2))
+            {
+                case 1:
+                    retval = Transforms.aescbc(iv, key, outbuf, Transforms.Encrypt, true);
+                    break;
+                case 2:
+                    retval = Transforms.aesecb(key, outbuf, Transforms.Encrypt, true);
+                    break;
+            }
+            // Finally, analyze retval and figure out which AES mode was used.
+            // 
             return retval;
         }
     }

@@ -29,8 +29,10 @@ namespace s2challenge3
         static void Main(string[] args)
         {
             byte[] key = Generators.genRandBytes(16, true);
-            Transforms.encryptionOracle(Encoding.ASCII.GetBytes("I love jenbaby a whole whole lot dude!!"));
-            System.Console.WriteLine(Encoding.ASCII.GetString(key));
+            byte[] iv = Generators.genRandBytes(16, true);
+            //Transforms.encryptionOracle(Encoding.ASCII.GetBytes("I love jenbaby a whole whole lot dude!!"));
+            System.Console.WriteLine(Encoding.ASCII.GetString(Transforms.aesecb(key,Transforms.aesecb(key,Encoding.ASCII.GetBytes("I love jenbaby a whole whole lot dude!!"),Transforms.Encrypt),Transforms.Decrypt)));
+            System.Console.WriteLine(Encoding.ASCII.GetString(Transforms.aescbc(iv,key,Transforms.aescbc(iv,key,Encoding.ASCII.GetBytes("I love jenbaby a whole whole lot dude!!"),Transforms.Encrypt,true),Transforms.Decrypt,true)));
             System.Console.ReadKey();
         }
     }
