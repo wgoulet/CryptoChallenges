@@ -355,5 +355,57 @@ namespace CryptoChallengesSet1
 
             return retval;
         }
+
+        public static byte[] encryptionOracle(byte[] inbytes)
+        {
+            byte[] retval = null;
+            byte[] key = Generators.genRandBytes(16, true);
+            byte[] iv = Generators.genRandBytes(16, false);
+            // Chop the incoming block into blocksize bytes; 
+            int blocksize = 16;
+            List<byte[]> inblocks = new List<byte[]>();
+            List<byte[]> pblocks = new List<byte[]>();
+            int count = 0;
+            byte[] block = new byte[blocksize];
+            for (int i = 0; i < inbytes.Length; i++)
+            {
+                block[count % 16] = inbytes[i];
+                count++;
+                if (count % 16 == 0)
+                {
+                    inblocks.Add((byte[])block.Clone());
+                }
+                // check if we are in the last block
+                if ((i % 16 == 0) && (i > inbytes.Length - blocksize))
+                {
+                    // fill in remaining bytes from inbytes first
+                    while (i < inbytes.Length)
+                    {
+                        block[i % blocksize] = inbytes[i++];
+                    }
+                    // any remaining slots in block to be filled with 0s
+                    for (int j = i % blocksize; j < blocksize; j++)
+                    {
+                        block[j] = 0;
+                    }
+                    inblocks.Add((byte[])block.Clone());
+                }
+            }
+            // Append bytes before/after plaintext
+            foreach (byte[] bl in inblocks)
+            {
+                Random rng = new Random();
+                int numf = rng.Next(5, 10);
+                int numb = rng.Next(5, 10);
+                byte[] pblock = new byte[numf + bl.Length + numb];
+                byte[] fb = Generators.genRandBytes(numf, true);
+                byte[] bb = Generators.genRandBytes(numb, true);
+                Array.Copy(fb, pblock, fb.Length);
+                Array.Copy(bl, 0, pblock, fb.Length, bl.Length);
+                Array.Copy(bb, 0, pblock, fb.Length + bl.Length, bb.Length);
+                pblocks.Add((byte[])pblock.Clone());
+            }
+            return retval;
+        }
     }
 }
