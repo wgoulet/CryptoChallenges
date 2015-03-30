@@ -29,47 +29,9 @@ namespace s2challenge3
          */
         static void Main(string[] args)
         {
-            byte[] key = Generators.genRandBytes(16, true);
-            byte[] iv = Generators.genRandBytes(16, true);
-            byte[] myecbpenguin = null;
             byte[] dbuf = File.ReadAllBytes(".\\tux.ppm");
             BinaryReader reader = new BinaryReader(new MemoryStream(dbuf));
-            //Get PPM magic number
-            while (reader.ReadByte() != 10) ;
-            //Skip comment
-            while (reader.ReadByte() != 10) ;
-            //Finally skip color setup info
-            while (reader.ReadByte() != 10) ;
-            //Remaining bytes are stuffed into image
-            myecbpenguin = reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position));
-            //if length of buffer is not a multiple of AES blocksize (16)
-            //lets increase the length of output buffer to account for any 
-            //required padding
-            int outputencrbytes = myecbpenguin.Length;
-            while (outputencrbytes % 16 != 0)
-                outputencrbytes++;
-            byte[] outbuf = new byte[16 + outputencrbytes];
-            BinaryWriter writer = new BinaryWriter(new MemoryStream(outbuf));
-            writer.Write(Encoding.ASCII.GetBytes("P"));
-            writer.Write(Encoding.ASCII.GetBytes("6"));
-            writer.Write((byte)0x0a);
-            writer.Write(Encoding.ASCII.GetBytes("#"));
-            writer.Write((byte)0x0a);
-            writer.Write(Encoding.ASCII.GetBytes("1"));
-            writer.Write(Encoding.ASCII.GetBytes("9"));
-            writer.Write(Encoding.ASCII.GetBytes("6"));
-            writer.Write((byte)0x20);
-            writer.Write(Encoding.ASCII.GetBytes("2"));
-            writer.Write(Encoding.ASCII.GetBytes("1"));
-            writer.Write(Encoding.ASCII.GetBytes("6"));
-            writer.Write((byte)0x0a);
-            writer.Write(Encoding.ASCII.GetBytes("2"));
-            writer.Write(Encoding.ASCII.GetBytes("5"));
-            writer.Write(Encoding.ASCII.GetBytes("5"));
-            writer.Write(Transforms.aesecb(key,myecbpenguin,Transforms.Encrypt,true));
-            writer.Close();
             System.Console.WriteLine(Detectors.AESModeDetector(dbuf));
-            File.WriteAllBytes(".\\ecbtux.jpg", outbuf);
             System.Console.ReadKey();
         }
     }
