@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -134,6 +135,53 @@ namespace CryptoChallengesSet1
                 }
             }
             return diffcount;
+        }
+
+        public static string AESModeDetector(byte[] inbytes)
+        {
+            byte[] outbuf = Transforms.EncryptionOracle(inbytes);
+            HashSet<byte[]> dupdetect = new HashSet<byte[]>(new ByteHashComparer());
+            BinaryReader reader = new BinaryReader(new MemoryStream(outbuf));
+            int dupecount = 0;
+            while(reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                byte[] block = reader.ReadBytes(16);
+                if(!dupdetect.Contains(block))
+                {
+                    dupdetect.Add(block);
+                }
+                else
+                {
+                    dupecount++;
+                }
+
+            }
+            if(dupecount > 0)
+                return "ECB";
+            else
+                return "CBC";
+        }
+    }
+    public class ByteHashComparer : EqualityComparer<byte[]>
+    {
+        public override bool Equals(byte[] x, byte[] y)
+        {
+            if (x.Length != y.Length)
+                return false;
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (x[i] != y[i])
+                    return false;
+            }
+            return true;
+        }
+
+        public override int GetHashCode(byte[] obj)
+        {
+            int hashcode = 0;
+            foreach (byte b in obj)
+                hashcode += b.GetHashCode();
+            return hashcode;
         }
     }
 }

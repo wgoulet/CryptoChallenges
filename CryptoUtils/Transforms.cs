@@ -377,6 +377,8 @@ namespace CryptoChallengesSet1
             byte[] retval = null;
             if (pad)
                 acsp.Padding = PaddingMode.PKCS7;
+            else
+                acsp.Padding = PaddingMode.None;
             if(mode == Transforms.Encrypt)
             {
                 ICryptoTransform enc = acsp.CreateEncryptor();
@@ -391,7 +393,7 @@ namespace CryptoChallengesSet1
             return retval;
         }
 
-        public static byte[] encryptionOracle(byte[] inbytes)
+        public static byte[] EncryptionOracle(byte[] inbytes)
         {
             byte[] retval = null;
             byte[] key = Generators.genRandBytes(16, true);
@@ -419,47 +421,32 @@ namespace CryptoChallengesSet1
                     {
                         block[i % blocksize] = inbytes[i++];
                     }
-                    // any remaining slots in block to be filled with 0s
-                    for (int j = i % blocksize; j < blocksize; j++)
-                    {
-                        block[j] = 0;
-                    }
                     inblocks.Add((byte[])block.Clone());
                 }
             }
             // Append bytes before/after plaintext
-            int outlen = 0;
+            int outlen = 16 * inblocks.Count;
+            int numf = rng.Next(5, 10);
+            int numb = rng.Next(5, 10);
+            byte[] outbuf = new byte[numf + outlen + numb];
+            BinaryWriter writer = new BinaryWriter(new MemoryStream(outbuf));
+            writer.Write(Generators.genRandBytes(numf));
             foreach (byte[] bl in inblocks)
             {
-                int numf = rng.Next(5, 10);
-                int numb = rng.Next(5, 10);
-                outlen += numf + bl.Length + numb;
-                byte[] pblock = new byte[numf + bl.Length + numb];
-                byte[] fb = Generators.genRandBytes(numf, true);
-                byte[] bb = Generators.genRandBytes(numb, true);
-                Array.Copy(fb, pblock, fb.Length);
-                Array.Copy(bl, 0, pblock, fb.Length, bl.Length);
-                Array.Copy(bb, 0, pblock, fb.Length + bl.Length, bb.Length);
-                pblocks.Add((byte[])pblock.Clone());
+                writer.Write(bl);
             }
-            // Prepare a big buffer to feed into the encryption functions
-            byte[] outbuf = new byte[outlen];
-            BinaryWriter writer = new BinaryWriter(new MemoryStream(outbuf));
-            foreach(byte[] pblock in pblocks)
-            {
-                writer.Write(pblock);
-            }
-            switch(rng.Next(1,2))
+            writer.Write(Generators.genRandBytes(numb));
+            switch(rng.Next(1,3))
             {
                 case 1:
                     retval = Transforms.aescbc(iv, key, outbuf, Transforms.Encrypt, true);
+                    System.Console.WriteLine("Used CBC");
                     break;
                 case 2:
                     retval = Transforms.aesecb(key, outbuf, Transforms.Encrypt, true);
+                    System.Console.WriteLine("Used ECB");
                     break;
             }
-            // Finally, analyze retval and figure out which AES mode was used.
-            // 
             return retval;
         }
     }
